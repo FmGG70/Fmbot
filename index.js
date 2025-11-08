@@ -11,67 +11,86 @@ const client = new Client({
   ]
 });
 
+/**
+ * lavalink-client v2 (compatible Lavalink v4)
+ * Doc: https://github.com/Tomato6966/lavalink-client
+ */
 const manager = new LavalinkManager({
   nodes: [
     {
-      authorization: process.env.LAVALINK_PASSWORD,
-      host: process.env.LAVALINK_HOST,
-      port: parseInt(process.env.LAVALINK_PORT, 10),
       id: "MainNode",
+      host: process.env.LAVALINK_HOST || "127.0.0.1",
+      port: Number(process.env.LAVALINK_PORT || 2333),
+      authorization: process.env.LAVALINK_PASSWORD || "youshallnotpass",
       secure: false
     }
   ],
-  sendToShard: (id, payload) => {
-    const guild = client.guilds.cache.get(id);
-    if (guild) guild.shard.send(payload);
+  /**
+   * Envoi des payloads VOICE_STATE/VOICE_SERVER vers le shard.
+   * Pour single-process (sans sharding), on forward via le client WebSocket.
+   */
+  sendToShard: (guildId, payload) => {
+    const guild = client.guilds.cache.get(guildId);
+    if (!guild) return;
+    guild.shard.send(payload);
   }
+});
+
+// Logs de base
+manager.on("nodeConnect", (node) => console.log(`✅ Connecté à Lavalink: ${node.id}`));
+manager.on("nodeError", (node, err) => console.error(`❌ Erreur node ${node.id}:`, err?.message || err));
+manager.on("trackStart", (player, track) => {
+  const channel = client.channels.cache.get(player.textId);
+  if (channel) channel.send(`🎶 Lecture: **${track.info.title}**`);
 });
 
 client.once("ready", () => {
   console.log(`🤖 Connecté à Discord en tant que ${client.user.tag}`);
-  manager.init(client.user.id);
+  // IMPORTANT: init après que client.user.id soit défini
+  manager.init({ id: client.user.id, clientName: client.user.username });
 });
 
-manager.on("nodeConnect", (node) =>
-  console.log(`✅ Connecté à Lavalink: ${node.id}`)
-);
-manager.on("nodeError", (node, err) =>
-  console.error(`❌ Erreur sur ${node.id}:`, err.message)
-);
-
+// Commandes simples: $play / $skip / $stop
 client.on("messageCreate", async (message) => {
-  if (!message.content.startsWith("$") || message.author.bot) return;
+  if (message.author.bot || !message.content.startsWith("$")) return;
 
-  const args = message.content.slice(1).split(" ");
-  const command = args.shift().toLowerCase();
+  const args = message.content.slice(1).trim().split(/\s+/);
+  const command = args.shift()?.toLowerCase();
 
   if (command === "play") {
-    const voiceChannel = message.member?.voice?.channel;
-    if (!voiceChannel)
-      return message.reply("❗ Rejoins un salon vocal d’abord.");
+    const voice = message.member?.voice?.channel;
+    if (!voice) return message.reply("❗ Rejoins un salon vocal d’abord.");
 
-    const player = manager.createPlayer({
-      guildId: message.guild.id,
-      voiceId: voiceChannel.id,
-      textId: message.channel.id
-    });
+    const queryRaw = args.join(" ");
+    if (!queryRaw) return message.reply("⚠️ Donne un lien ou un titre.");
 
-    const query = args.join(" ");
-    const res = await player.search(query, {
-      requester: message.author
-    });
+    // ytsearch si non-URL
+    const query = /^https?:\/\//i.test(queryRaw) ? queryRaw : `ytsearch:${queryRaw}`;
 
-    if (!res.tracks.length) return message.reply("❌ Aucun résultat trouvé.");
+    let player = manager.players.get(message.guild.id);
+    if (!player) {
+      player = manager.createPlayer({
+        guildId: message.guild.id,
+        voiceId: voice.id,
+        textId: message.channel.id,
+        volume: 100
+      });
+    }
+
+    const res = await player.search(query, { requester: message.author }).catch(() => null);
+    if (!res || !res.tracks?.length) return message.reply("❌ Aucun résultat trouvé.");
+
+    // Priorité: track unique si loadType=TRACK/SEARCH
+    const track = res.tracks[0];
     player.connect();
-    player.queue.add(res.tracks[0]);
-    if (!player.playing && !player.paused) player.play();
-    message.reply(`🎶 Lecture : **${res.tracks[0].info.title}**`);
+    player.queue.add(track);
+    if (!player.playing && !player.paused) await player.play();
   }
 
   if (command === "skip") {
     const player = manager.players.get(message.guild.id);
-    if (!player) return message.reply("Aucune lecture en cours.");
-    player.skip();
+    if (!player || !player.playing) return message.reply("Aucune lecture en cours.");
+    await player.skip();
     message.reply("⏭️ Morceau passé.");
   }
 
