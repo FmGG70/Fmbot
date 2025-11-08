@@ -1,7 +1,7 @@
 require("dotenv").config();
 const { Client, GatewayIntentBits } = require("discord.js");
 const { Manager } = require("erela.js");
-const Spotify = require("erela.js-spotify");
+
 
 const client = new Client({
   intents: [
@@ -15,7 +15,7 @@ const client = new Client({
 const prefix = process.env.BOT_PREFIX || "$";
 
 client.manager = new Manager({
-  plugins: [new Spotify()],
+  plugins: [],
   nodes: [
     {
       host: process.env.LAVALINK_HOST,
