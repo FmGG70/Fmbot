@@ -1,1 +1,13 @@
-
+{
+  "name": "fmbot",
+  "version": "1.0.0",
+  "description": "Bot Discord de base compatible avec PufferPanel",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "discord.js": "^14.15.2",
+    "dotenv": "^16.3.1"
+  }
+}
