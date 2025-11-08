@@ -1,6 +1,7 @@
-# Fmbot
-Bot Discord basique compatible PufferPanel.
+# Fmbot – Bot Discord Musique
+Bot musical basé sur Discord.js + Lavalink.
 
 ## Commandes
-- `$ping` → renvoie `Pong!`
-- `$hello` → dit bonjour à l’utilisateur
+- `$play <titre ou URL>`
+- `$skip`
+- `$stop`
