@@ -1,0 +1,101 @@
+{
+    "type": "generic",
+    "display": "Red Discord Bot",
+    "icon": "discord",
+    "data": {
+        "instance_name": {
+            "type": "string",
+            "value": "",
+            "display": "Nom de l'instance",
+            "desc": "Choisis un nom pour ton bot (ex : FmBot)",
+            "required": true,
+            "userEdit": true
+        },
+        "prefix": {
+            "type": "string",
+            "value": "!",
+            "display": "Préfixe principal",
+            "desc": "Préfixe pour soliciter ton bot",
+            "required": true,
+            "userEdit": true
+        },
+        "prefix2": {
+            "type": "string",
+            "value": "",
+            "display": "Préfixe secondaire",
+            "desc": "Second préfixe (si besoin)",
+            "required": false,
+            "userEdit": true
+        },
+        "prefix3": {
+            "type": "string",
+            "value": "",
+            "display": "Préfixe tertiaire",
+            "desc": "Troisième préfixe (si besoin)",
+            "required": false,
+            "userEdit": true
+        },
+        "token": {
+            "type": "string",
+            "value": "",
+            "display": "Discord Bot Token",
+            "required": true,
+            "userEdit": true
+        }
+    },
+    "install": [
+        {
+            "type": "command",
+            "commands": [
+                "python3 -m venv venv",
+                "bash -c 'source venv/bin/activate && pip install -U pip setuptools wheel Red-DiscordBot'",
+                "mkdir -p ${instance_name}",
+                "bash -c 'source venv/bin/activate && redbot-setup --no-prompt --instance-name ${instance_name} --data-path ${instance_name} --backend json'"
+            ]
+        }
+    ],
+    "uninstall": [
+        {
+            "type": "command",
+            "commands": [
+                "rm -rf venv ${instance_name}"
+            ]
+        }
+    ],
+    "run": {
+        "command": "bash -c 'source venv/bin/activate && redbot ${instance_name} --token \"${token}\" --prefix \"${prefix}\" --prefix \"${prefix2}\" --prefix \"${prefix3}\"'",
+        "stopCode": 9,
+        "stdin": {
+            "type": "stdin"
+        },
+        "autostart": false,
+        "autorecover": false,
+        "autorestart": false
+    },
+    "environment": {
+        "type": "host"
+    },
+    "supportedEnvironments": [
+        {
+            "type": "host"
+        }
+    ],
+    "requirements": {
+        "binaries": [
+            "python3",
+            "pip3",
+            "git"
+        ]
+    },
+    "stats": {
+        "type": ""
+    },
+    "query": {
+        "type": ""
+    },
+    "keepAlive": {
+        "frequency": "",
+        "command": ""
+    },
+    "name": "RedBotDiscord2"
+}
