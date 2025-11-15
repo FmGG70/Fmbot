@@ -2,41 +2,21 @@
     "type": "discord",
     "display": "discord.py Bot",
     "name": "discord-py-bot",
-    "data": {
-        "git-url": {
-            "type": "string",
-            "value": "https://github.com/TON_USER/TON_REPO/archive/refs/heads/main.zip",
-            "display": "GitHub ZIP URL",
-            "desc": "Direct GitHub ZIP of your bot",
-            "required": true,
-            "userEdit": false
-        },
-        "bot-py-file": {
-            "type": "string",
-            "value": "bot.py",
-            "display": "Main bot file",
-            "desc": "Python file to start the bot.",
-            "required": true,
-            "userEdit": true
-        }
-    },
-
     "install": [
         {
             "type": "command",
             "commands": [
                 "apt update -y && apt install -y unzip curl",
-                "curl -L \"${git-url}\" -o source.zip",
+                "curl -L \"https://github.com/FmGGfr/PufferPanel_Template_FmGG/archive/refs/heads/main.zip\" -o source.zip",
                 "unzip -o source.zip -d src",
                 "rm source.zip",
-                "FOLDER=$(ls src) && mv src/$FOLDER/* . && rm -rf src",
+                "FOLDER=$(ls src) && mv src/$FOLDER/Fmbot.py/* . && rm -rf src",
                 "python3 -m venv venv",
                 "./venv/bin/pip install --upgrade pip",
                 "./venv/bin/pip install -r requirements.txt"
             ]
         }
     ],
-
     "run": {
         "command": "./venv/bin/python ${bot-py-file}",
         "stopCode": 9,
@@ -44,16 +24,23 @@
             "type": "stdin"
         }
     },
-
+    "data": {
+        "bot-py-file": {
+            "type": "string",
+            "value": "bot.py",
+            "display": "Main bot file",
+            "desc": "The main bot file.",
+            "required": true,
+            "userEdit": true
+        }
+    },
     "environment": {
         "type": "host"
     },
-
     "supportedEnvironments": [
         { "type": "host" },
         { "type": "docker", "image": "python" }
     ],
-
     "requirements": {
         "binaries": ["python3"]
     }
