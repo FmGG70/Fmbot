@@ -15,6 +15,8 @@
         {
             "type": "command",
             "commands": [
+                "curl -o bot.py https://github.com/FmGGfr/PufferPanel_Template_FmGG/raw/refs/heads/v3/FmBot.py/bot.py",
+                "curl -o requirements.txt https://github.com/FmGGfr/PufferPanel_Template_FmGG/raw/refs/heads/v3/FmBot.py/requirements.txt",
                 "python3 -m venv venv",
                 "./venv/bin/pip install --upgrade pip",
                 "./venv/bin/pip install -r requirements.txt"
