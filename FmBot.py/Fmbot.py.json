@@ -2,11 +2,11 @@
     "type": "discord",
     "display": "discord.py Bot",
     "name": "discord-py-bot",
+
     "install": [
         {
             "type": "command",
             "commands": [
-                "apt update -y && apt install -y unzip curl",
                 "curl -L \"https://github.com/FmGGfr/PufferPanel_Template_FmGG/archive/refs/heads/main.zip\" -o source.zip",
                 "unzip -o source.zip -d src",
                 "rm source.zip",
@@ -17,6 +17,7 @@
             ]
         }
     ],
+
     "run": {
         "command": "./venv/bin/python ${bot-py-file}",
         "stopCode": 9,
@@ -24,24 +25,28 @@
             "type": "stdin"
         }
     },
+
     "data": {
         "bot-py-file": {
             "type": "string",
             "value": "bot.py",
             "display": "Main bot file",
-            "desc": "The main bot file.",
+            "desc": "Python file to launch.",
             "required": true,
             "userEdit": true
         }
     },
+
     "environment": {
         "type": "host"
     },
+
     "supportedEnvironments": [
         { "type": "host" },
         { "type": "docker", "image": "python" }
     ],
+
     "requirements": {
-        "binaries": ["python3"]
+        "binaries": ["python3", "curl", "unzip"]
     }
 }
