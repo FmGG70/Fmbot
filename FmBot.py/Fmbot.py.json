@@ -18,13 +18,9 @@
         {
             "type": "command",
             "commands": [
-                "apt update -y && apt install -y git",
-
                 "git clone https://github.com/Rapptz/discord.py.git src",
-
                 "mv src/* .",
                 "rm -rf src",
-
                 "python3 -m venv venv",
                 "./venv/bin/pip install --upgrade pip",
                 "./venv/bin/pip install -r requirements.txt"
@@ -50,6 +46,6 @@
     ],
 
     "requirements": {
-        "binaries": ["python3"]
+        "binaries": ["python3", "git"]
     }
 }
